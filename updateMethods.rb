@@ -116,7 +116,7 @@ module UpdateMethods
 	end
 
 ###################################################################
-# Updates a user from jos_users table 
+# Updates a user from users table 
 # Returns 0 for success or -1 for failure
 ###################################################################
 	def updateUser(userInfo)
@@ -130,11 +130,11 @@ module UpdateMethods
 			row = dbh.select_one("SELECT VERSION()")
 			puts "Server version: " + row[0]
 		
-			user_id = dbh.prepare("SELECT id FROM jos_users WHERE id = '#{userInfo.values[0]}'")
+			user_id = dbh.prepare("SELECT id FROM b9tj1_users WHERE id = '#{userInfo.values[0]}'")
 			user_id.execute()
 			user_id.fetch do | id |
 				userInfo.values[1].each do | key, value |
-					num.push(dbh.do("UPDATE jos_users SET #{key} = '#{value}' WHERE id = '#{id[0]}'"))
+					num.push(dbh.do("UPDATE b9tj1_users SET #{key} = '#{value}' WHERE id = '#{id[0]}'"))
 				end	
 			end
 			# if one field of the table was updated, its enough

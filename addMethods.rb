@@ -235,7 +235,7 @@ module AddMethods
 	end
 
 ##################################################################
-# Adds a new user into jos_users table
+# Adds a new user into users table
 # Returns the new id of the user
 ##################################################################
 	def addUser(userInfo)
@@ -261,13 +261,13 @@ module AddMethods
 			row = dbh.select_one("SELECT VERSION()")
 			puts "Server version: " + row[0]
 		
-			dbh.do("INSERT INTO jos_users (username) VALUES ('#{username}')")
-			id = dbh.prepare("SELECT id FROM jos_users WHERE username = '#{username}'")
+			dbh.do("INSERT INTO b9tj1_users (username) VALUES ('#{username}')")
+			id = dbh.prepare("SELECT id FROM b9tj1_users WHERE username = '#{username}'")
 			id.execute()
 			id.fetch do | n |
 				new_id = n[0]
 			end
-			my_query = dbh.prepare("UPDATE jos_users SET email = '#{email}' WHERE id = '#{new_id}'")
+			my_query = dbh.prepare("UPDATE b9tj1_users SET email = '#{email}' WHERE id = '#{new_id}'")
 			my_query.execute()
 			
 		rescue DBI::DatabaseError => e

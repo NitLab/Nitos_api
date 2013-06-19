@@ -392,7 +392,7 @@ module GetMethods
 			i=0
 			my_query.fetch do | n |
 				# get users for this slice
-				my_query = dbh.prepare("SELECT jos_users.id FROM jos_users, users_slices WHERE jos_users.id=users_slices.user_id AND users_slices.slice_id='#{n[0]}'")
+				my_query = dbh.prepare("SELECT b9tj1_users.id FROM b9tj1_users, users_slices WHERE b9tj1_users.id=users_slices.user_id AND users_slices.slice_id='#{n[0]}'")
 				my_query.execute()
 
 				tmp = Array.new
@@ -527,7 +527,7 @@ module GetMethods
 	end
 
 ###################################################################
-# Returns the table jos_users and the rsa_keys.
+# Returns the table users and the rsa_keys.
 #
 # Returns a struct for each user and all the information we have about him.
 # [{user_id="",username="",email="",keys=[[""],[""]]},
@@ -545,7 +545,7 @@ module GetMethods
 			row = dbh.select_one("SELECT VERSION()")
 			puts "Server version: " + row[0]			
 			
-			my_query = dbh.prepare("SELECT id, username, email FROM jos_users WHERE block='0' AND id!='62'")
+			my_query = dbh.prepare("SELECT id, username, email FROM b9tj1_users WHERE block='0' AND id!='62'")
 			my_query.execute()				
 			i=0
 			my_query.fetch do | n |

@@ -116,7 +116,7 @@ module DeleteMethods
 	end
 
 ###################################################################
-# Delete a user from jos_users table
+# Delete a user from users table
 # Returns 0 for success or -1 for failure
 ##################################################################
 	def deleteUser(userInfo)
@@ -139,7 +139,7 @@ module DeleteMethods
 			row = dbh.select_one("SELECT VERSION()")
 			puts "Server version: " + row[0]
 			
-			num = dbh.do("DELETE FROM jos_users WHERE id = '#{user_id}' AND id!='62'")
+			num = dbh.do("DELETE FROM b9tj1_users WHERE id = '#{user_id}' AND id!='62'")
 			if (num == 1)	
 					return 0
 			end

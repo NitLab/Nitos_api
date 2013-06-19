@@ -60,7 +60,7 @@ puts "Your database: #{$db}"
 puts "and your server: #{$server}"
 
 puts "Setting up the XML-RPC server..."
-s  = XMLRPC::Server.new(8081, "#{$server}")
+s  = XMLRPC::Server.new(8085, "#{$server}")
 s.add_handler("scheduler.server", Scheduler.new)
 s.serve
 
