@@ -1,4 +1,4 @@
-#
+
 # Copyright (c) 2012 NITLab, University of Thessaly, CERTH, Greece
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -83,7 +83,7 @@ module AddMethods
 		end
 		start_time = time1.strftime("%Y-%m-%d %H:%M:%S")
 		finish_time = time2.strftime("%Y-%m-%d %H:%M:%S")
-		
+	
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
@@ -112,10 +112,28 @@ module AddMethods
 				slice_name = name
 			end
 			puts slice_name
+
+			# Reservation while being in the active time slot
+			node_y = 0
+			now = Time.now
+			puts now
+			# execute enable_node for reservations in the active time slot
+			final_reserved.each do | id |
+				if (start_time < now) && (now < finish_time)
+					my_query = dbh.prepare("SELECT y FROM node_list WHERE id = '#{id}'")
+					result = my_query.execute()
+					my_query.fetch do | y |
+						node_y = y
+					end
+					puts node_y
+
+					cmd = `enable_node #{slice_name} #{node_y}`
+				end
+			end
+
 			# insert values into the database
 			i = 0
 			final_reserved.each do | id |
-	#dbh.do("INSERT INTO reservation (username, begin_time,#{nodesInfo.keys[2]},#{nodesInfo.keys[3]}) VALUES ('#{slice_name[0]}','#{nodesInfo.values[1]}','#{nodesInfo.values[2]}','#{id}')")i
 				puts id
 				id = id.to_i
 				puts id
@@ -216,7 +234,6 @@ module AddMethods
 			puts slice_name
 			i = 0
 			final_reserved.each do | id |
-	#dbh.do("INSERT INTO spec_reserve (#{channelInfo.keys[0]}, #{channelInfo.keys[1]},#{channelInfo.keys[2]},#{channelInfo.keys[3]}) VALUES ('#{channelInfo.values[0]}','#{channelInfo.values[1]}','#{channelInfo.values[2]}','#{id}')")
 				dbh.do("INSERT INTO spec_reserve (username,begin_time,end_time,spectrum_id) VALUES ('#{slice_name[0]}','#{start_time}','#{finish_time}','#{id}')")
 					final_reserved[i] = id
 					i += 1
@@ -427,7 +444,7 @@ module AddMethods
 				new_id = n[0]
 			end
 			# create OMF pubsub node into the xmpp server
-			value = `create_slice_sfa #{slice_name} #{new_id}`
+			value = `create_slice #{slice_name} nitlab.inf.uth.gr`
 			
 		rescue DBI::DatabaseError => e
 			puts "An error occurred"

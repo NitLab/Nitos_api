@@ -67,7 +67,7 @@ module GetMethods
 			i=0
 			my_query.fetch do | n |
 # FILTERING because of non functional nodes ***
-				if n[0] != "node001" && n[0] != "node006" && n[0] != "node010" && n[0] != "node024" && n[0] != "node028" && n[0] != "node031"
+				if n[0] != "node031"
 					pos_result[i] = pos.new("#{n[6]}","#{n[7]}","#{n[8]}")
 					final_result[i] = final.new("#{n[0]}","#{n[1]}","#{n[2]}","#{n[3]}","#{n[4]}","#{n[5]}",pos_result[i])
 					puts final_result[i]
@@ -164,13 +164,13 @@ module GetMethods
 			pos_result = Array.new
 			i=j=0
 			my_query[j].fetch do | n |
-				if n[0] != "node006" && n[0] != "node010" && n[0] != "node022" && n[0] != "node024" && n[0] != "node028" && n[0] != "node031"
+#	if n[0] != "node006" && n[0] != "node010" && n[0] != "node022" && n[0] != "node024" && n[0] != "node028" && n[0] != "node031"
 					pos_result[i] = pos.new("#{n[6]}","#{n[7]}","#{n[8]}")
 					final_result[i] = final.new("#{n[0]}","#{n[1]}","#{n[2]}","#{n[3]}","#{n[4]}","#{n[5]}",pos_result[i])
 					puts final_result[i]
 					i=i+1
 					j=j+1
-				end # end filtering
+#				end # end filtering
 		end
 		elsif !retValue.empty? && !filter.empty? 
 			query = "SELECT "
@@ -447,8 +447,8 @@ module GetMethods
 #			if retValue.empty? && filter.empty? 
 			final = Struct.new(:reservation_id,:slice_id,:start_time,:end_time,:node_id)
 			# select only the active reservations. Those that have not expired
-			my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), node_id FROM reservation WHERE end_time>'#{now}'")
-#my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), node_id FROM reservation WHERE begin_time>='20120801'")
+my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), node_id FROM reservation WHERE end_time>'#{now}'")
+#my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), node_id FROM reservation WHERE begin_time>='20130401'")
 			my_query.execute()				
 			i=0
 			my_query.fetch do | n |
@@ -498,8 +498,8 @@ module GetMethods
 			now = time.strftime("%Y-%m-%d %H:%M:%S")
 			final = Struct.new(:reservation_id,:slice_id,:start_time,:end_time,:channel_id)
 			# select only the active reservations. Those that have not expired...
-			my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), spectrum_id FROM spec_reserve WHERE end_time>'#{now}'")
-#my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), node_id FROM reservation WHERE end_time>='#{now}'")
+my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), spectrum_id FROM spec_reserve WHERE end_time>'#{now}'")
+#my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_timestamp(end_time), node_id FROM reservation WHERE end_time>='20130401'")
 			my_query.execute()
 			i=0
 			my_query.fetch do | n |
@@ -527,7 +527,7 @@ module GetMethods
 	end
 
 ###################################################################
-# Returns the table users and the rsa_keys.
+# Returns the table jos_users and the rsa_keys.
 #
 # Returns a struct for each user and all the information we have about him.
 # [{user_id="",username="",email="",keys=[[""],[""]]},
@@ -582,9 +582,18 @@ module GetMethods
 ###################################################################
 	def getTestbedInfo()
 		final = Struct.new(:name,:grain,:OMF_version,:scheduler_version,:gw_address,:longitude,:latitude)
-		final_result = final.new("nitos","1800","5.3","1.0","nitlab.inf.uth.gr","39.360839","22.949989")			
+		final_result = final.new("nitos","1800","5.4","1.0","nitlab.inf.uth.gr","39.360839","22.949989")			
 		puts "result: #{final_result}"
 		final_result
 	end
-	
+
+###################################################################			
+# Returns time in the server
+###################################################################
+	def getServerTime()
+		# get the time now
+		time = Time.now.to_i
+		time
+	end
+
 end

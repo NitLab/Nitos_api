@@ -59,7 +59,7 @@ module DeleteMethods
 			
 			num = dbh.do("DELETE FROM rsa_keys WHERE rsa_keys.key = '#{key}'")
 			if (num == 1)	
-					return 0
+				return 0
 			end
 			
 		rescue DBI::DatabaseError => e
@@ -185,7 +185,7 @@ module DeleteMethods
 		
 			num = dbh.do("DELETE FROM users_slices WHERE user_id = '#{user_id}' AND slice_id = '#{slice_id}'")
 			if (num == 1)	
-					return 0
+				return 0
 			end
 		
 		rescue DBI::DatabaseError => e
@@ -305,8 +305,23 @@ module DeleteMethods
 			# get server version string and display it
 			row = dbh.select_one("SELECT VERSION()")
 			puts "Server version: " + row[0]
-		
+
+			# Delete reservation while being in the active time slot
+			now = Time.now
 			ids.each do | id |
+				my_query = dbh.prepare("SELECT begin_time,end_time FROM reservation WHERE id = '#{id}'")
+				result = my_query.execute()
+				my_query.fetch do | y |
+					if (y["begin_time"] < now) && (now < y["end_time"])
+					puts "MPIKEE"
+						my_query = dbh.prepare("SELECT reservation.username, node_list.y FROM reservation JOIN node_list on reservation.node_id=node_list.id WHERE id = '#{id}'")
+						result = my_query.execute()
+						my_query.fetch do | h |
+							  cmd = `disable_node #{h["username"]} #{h["y"]} nitlab.inf.uth.gr`
+						end
+					end
+				end
+
 				num = dbh.do("DELETE FROM reservation WHERE id = '#{id}'")
 				if num == 1
 					deleted.push(id)

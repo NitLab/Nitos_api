@@ -36,7 +36,7 @@ require 'date'
 require_relative 'scheduler'
 
 counter = 1
-file = File.new("../api_conf","r")
+file = File.new("api_conf","r")
 while(line = file.gets)
 	if(counter == 1)
 		$db = line
