@@ -127,7 +127,7 @@ module AddMethods
 					end
 					puts node_y
 
-					cmd = `enable_node #{slice_name} #{node_y}`
+					cmd = `enable_node #{slice_name} #{node_y} nitlab.inf.uth.gr`
 				end
 			end
 
