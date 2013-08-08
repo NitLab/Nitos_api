@@ -54,9 +54,6 @@ module GetMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
   
 		if retValue.empty? && filter.empty? 
 			my_query = dbh.prepare("SELECT name, id, type, floor, view, wall, x, y, z FROM node_list order by name")
@@ -66,13 +63,6 @@ module GetMethods
 			pos_result = Array.new
 			i=0
 			my_query.fetch do | n |
-# FILTERING because of non functional nodes ***
-				if n[0] != "node031"
-					pos_result[i] = pos.new("#{n[6]}","#{n[7]}","#{n[8]}")
-					final_result[i] = final.new("#{n[0]}","#{n[1]}","#{n[2]}","#{n[3]}","#{n[4]}","#{n[5]}",pos_result[i])
-					puts final_result[i]
-					i=i+1
-				end
 			end 	
 		elsif !retValue.empty? && filter.empty?
 			my_query = Array.new
@@ -271,9 +261,6 @@ module GetMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 
 		if retValue.empty? && filter.empty? 
 			my_query = dbh.prepare("SELECT id, modulation, channel, frequency FROM spectrum")
@@ -436,10 +423,7 @@ module GetMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]		
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")		
 			
 			# get the time now
 			time = Time.new
@@ -488,10 +472,7 @@ my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_ti
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]			
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")			
 			
 			# get the time now
 			time = Time.new
@@ -540,16 +521,13 @@ my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_ti
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]			
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")			
 			
-			my_query = dbh.prepare("SELECT id, username, email FROM b9tj1_users WHERE block='0' AND id!='62'")
+			my_query = dbh.prepare("SELECT id, username, email FROM b9tj1_users WHERE block='0'")
 			my_query.execute()				
 			i=0
 			my_query.fetch do | n |
-				# get users for this slice
+				# get keys for this user
 				my_query = dbh.prepare("SELECT rsa_keys.key FROM rsa_keys WHERE user_id='#{n[0]}'")
 				my_query.execute()
 				tmp = Array.new

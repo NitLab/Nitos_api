@@ -88,9 +88,6 @@ module AddMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 			
 			my_query = dbh.prepare("SELECT node_id FROM reservation WHERE begin_time <= '#{start_time}' AND end_time > '#{start_time}'")
 			my_query.execute()
@@ -111,12 +108,11 @@ module AddMethods
 			my_query.fetch do | name |
 				slice_name = name
 			end
-			puts slice_name
+			#puts slice_name
 
-			# Reservation while being in the active time slot
 			node_y = 0
 			now = Time.now
-			puts now
+			puts "Active time slot...#{now}"
 			# execute enable_node for reservations in the active time slot
 			final_reserved.each do | id |
 				if (start_time < now) && (now < finish_time)
@@ -125,9 +121,8 @@ module AddMethods
 					my_query.fetch do | y |
 						node_y = y
 					end
-					puts node_y
-
-					cmd = `enable_node #{slice_name} #{node_y} nitlab.inf.uth.gr`
+					#puts node_y
+					cmd = `enable_node #{slice_name} #{node_y} your_xmpp_server`
 				end
 			end
 
@@ -210,9 +205,6 @@ module AddMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 		
 			my_query = dbh.prepare("SELECT spectrum_id FROM spec_reserve WHERE begin_time <= '#{start_time}' AND end_time > '#{start_time}'")
 			my_query.execute()
@@ -226,12 +218,13 @@ module AddMethods
 				end
 			end
 			final_reserved = channels - already_reserved
-		my_query = dbh.prepare("SELECT slice_name FROM slices WHERE id = '#{slice_id}'")
+			my_query = dbh.prepare("SELECT slice_name FROM slices WHERE id = '#{slice_id}'")
 			result = my_query.execute()
 			my_query.fetch do | name |
 				slice_name = name
 			end
-			puts slice_name
+			#puts slice_name
+			# insert values into the database
 			i = 0
 			final_reserved.each do | id |
 				dbh.do("INSERT INTO spec_reserve (username,begin_time,end_time,spectrum_id) VALUES ('#{slice_name[0]}','#{start_time}','#{finish_time}','#{id}')")
@@ -256,7 +249,7 @@ module AddMethods
 # Returns the new id of the user
 ##################################################################
 	def addUser(userInfo)
-		new_id = nil
+		new_id = 0
 		username = 0
 		email = 0
 		userInfo.each_pair { | name, value |
@@ -274,9 +267,6 @@ module AddMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 		
 			dbh.do("INSERT INTO b9tj1_users (username) VALUES ('#{username}')")
 			id = dbh.prepare("SELECT id FROM b9tj1_users WHERE username = '#{username}'")
@@ -295,7 +285,8 @@ module AddMethods
 			# disconnect from server
 			dbh.disconnect if dbh
 		end	
-			
+		
+		puts new_id
 		return new_id
 	end
 
@@ -322,10 +313,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]		
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")		
 		
 			dbh.do("INSERT INTO users_slices (user_id) VALUES ('#{user_id}')")
 			id = dbh.prepare("SELECT id FROM users_slices WHERE user_id = '#{user_id}'")
@@ -346,7 +334,8 @@ module AddMethods
 			# disconnect from server
 			dbh.disconnect if dbh
 		end
-			
+
+		puts "Association between user and slice done..."
 		return 0
 	end
 
@@ -377,9 +366,6 @@ module AddMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 
 			dbh.do("INSERT INTO rsa_keys (user_id) VALUES ('#{user_id}')")
 			id = dbh.prepare("SELECT id FROM rsa_keys WHERE user_id = '#{user_id}'")
@@ -432,10 +418,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]		
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")		
 				
 			dbh.do("INSERT INTO slices (slice_name) VALUES ('#{slice_name}')")
 			id = dbh.prepare("SELECT id FROM slices WHERE slice_name = '#{slice_name}'")
@@ -444,7 +427,7 @@ module AddMethods
 				new_id = n[0]
 			end
 			# create OMF pubsub node into the xmpp server
-			value = `create_slice #{slice_name} nitlab.inf.uth.gr`
+			value = `create_slice #{slice_name} your_xmpp_server`
 			
 		rescue DBI::DatabaseError => e
 			puts "An error occurred"
@@ -454,7 +437,8 @@ module AddMethods
 			# disconnect from server
 			dbh.disconnect if dbh
 		end		
-			
+
+		puts "New Slice created... #{slice_name}"
 		return new_id			
 	end
 
@@ -493,9 +477,6 @@ module AddMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 		
 			dbh.do("INSERT INTO node_list (name,type,floor,view,wall,X,Y,Z) VALUES ('#{hostname}','#{node_type}','#{floor}','#{view}','#{wall}','#{position.values[0]}','#{position.values[1]}','#{position.values[2]}')")
 			id = dbh.prepare("SELECT id FROM node_list WHERE name = '#{hostname}'")
@@ -512,7 +493,8 @@ module AddMethods
 			# disconnect from server
 			dbh.disconnect if dbh
 		end
-			
+
+		puts "New node added..."
 		return new_id
 	end
 
@@ -542,9 +524,6 @@ module AddMethods
 		begin
 			# connect to the MySQL server
 			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
-			# get server version string and display it
-			row = dbh.select_one("SELECT VERSION()")
-			puts "Server version: " + row[0]
 		
 			dbh.do("INSERT INTO spectrum (channel) VALUES ('#{channel}')")
 			id = dbh.prepare("SELECT id FROM spectrum WHERE channel = '#{channel}'")
@@ -562,7 +541,8 @@ module AddMethods
 			# disconnect from server
 			dbh.disconnect if dbh
 		end	
-			
+
+		puts "New channel added..."
 		return new_id
 	end
 
