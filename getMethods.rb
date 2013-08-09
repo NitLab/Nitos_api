@@ -63,6 +63,10 @@ module GetMethods
 			pos_result = Array.new
 			i=0
 			my_query.fetch do | n |
+				pos_result[i] = pos.new("#{n[6]}","#{n[7]}","#{n[8]}")
+				final_result[i] = final.new("#{n[0]}","#{n[1]}","#{n[2]}","#{n[3]}","#{n[4]}","#{n[5]}",pos_result[i])
+				puts final_result[i]
+				i=i+1
 			end 	
 		elsif !retValue.empty? && filter.empty?
 			my_query = Array.new
