@@ -56,7 +56,7 @@ module UpdateMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			node_id = dbh.prepare("SELECT id FROM node_list WHERE id = '#{node_id}'")
 			node_id.execute()
@@ -105,7 +105,7 @@ module UpdateMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			channel_id = dbh.prepare("SELECT id FROM spectrum WHERE id = '#{channel_id}'")
 			channel_id.execute()
@@ -155,13 +155,13 @@ module UpdateMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
-			user_id = dbh.prepare("SELECT id FROM b9tj1_users WHERE id = '#{user_id}'")
+			user_id = dbh.prepare("SELECT id FROM nitlab.b9tj1_users WHERE id = '#{user_id}'")
 			user_id.execute()
 			user_id.fetch do | id |
 				fields.each do | key, value |
-					num.push(dbh.do("UPDATE b9tj1_users SET #{key} = '#{value}' WHERE id = '#{id[0]}'"))
+					num.push(dbh.do("UPDATE nitlab.b9tj1_users SET #{key} = '#{value}' WHERE id = '#{id[0]}'"))
 				end	
 			end
 			# if one field of the table was updated, its enough
@@ -209,7 +209,7 @@ module UpdateMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			slice_id = dbh.prepare("SELECT id FROM slices WHERE id = '#{slice_id}'")
 			slice_id.execute()
@@ -280,7 +280,7 @@ module UpdateMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			ids.each do | id |
 				num = dbh.do("UPDATE reservation SET begin_time='#{start_time}', end_time ='#{finish_time}' WHERE id = '#{id}'")
@@ -346,7 +346,7 @@ module UpdateMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 			
 			ids.each do | id |
 				num = dbh.do("UPDATE spec_reserve SET begin_time='#{start_time}', end_time ='#{finish_time}' WHERE id = '#{id}'")

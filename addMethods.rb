@@ -87,7 +87,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 			
 			my_query = dbh.prepare("SELECT node_id FROM reservation WHERE begin_time <= '#{start_time}' AND end_time > '#{start_time}'")
 			my_query.execute()
@@ -114,17 +114,17 @@ module AddMethods
 			now = Time.now
 			puts "Active time slot...#{now}"
 			# execute enable_node for reservations in the active time slot
-			final_reserved.each do | id |
-				if (start_time < now) && (now < finish_time)
-					my_query = dbh.prepare("SELECT y FROM node_list WHERE id = '#{id}'")
-					result = my_query.execute()
-					my_query.fetch do | y |
-						node_y = y
-					end
+#final_reserved.each do | id |
+#				if (start_time < now) && (now < finish_time)
+#					my_query = dbh.prepare("SELECT y FROM node_list WHERE id = '#{id}'")
+#					result = my_query.execute()
+#					my_query.fetch do | y |
+#						node_y = y
+#					end
 					#puts node_y
-					cmd = `enable_node #{slice_name} #{node_y} your_xmpp_server`
-				end
-			end
+#					cmd = `enable_node #{slice_name} #{node_y}`
+#				end
+#			end
 
 			# insert values into the database
 			i = 0
@@ -204,7 +204,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			my_query = dbh.prepare("SELECT spectrum_id FROM spec_reserve WHERE begin_time <= '#{start_time}' AND end_time > '#{start_time}'")
 			my_query.execute()
@@ -266,15 +266,15 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
-			dbh.do("INSERT INTO b9tj1_users (username) VALUES ('#{username}')")
-			id = dbh.prepare("SELECT id FROM b9tj1_users WHERE username = '#{username}'")
+			dbh.do("INSERT INTO nitlab.b9tj1_users (username) VALUES ('#{username}')")
+			id = dbh.prepare("SELECT id FROM nitlab.b9tj1_users WHERE username = '#{username}'")
 			id.execute()
 			id.fetch do | n |
 				new_id = n[0]
 			end
-			my_query = dbh.prepare("UPDATE b9tj1_users SET email = '#{email}' WHERE id = '#{new_id}'")
+			my_query = dbh.prepare("UPDATE nitlab.b9tj1_users SET email = '#{email}' WHERE id = '#{new_id}'")
 			my_query.execute()
 			
 		rescue DBI::DatabaseError => e
@@ -313,7 +313,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")		
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")		
 		
 			dbh.do("INSERT INTO users_slices (user_id) VALUES ('#{user_id}')")
 			id = dbh.prepare("SELECT id FROM users_slices WHERE user_id = '#{user_id}'")
@@ -365,7 +365,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 
 			dbh.do("INSERT INTO rsa_keys (user_id) VALUES ('#{user_id}')")
 			id = dbh.prepare("SELECT id FROM rsa_keys WHERE user_id = '#{user_id}'")
@@ -415,19 +415,21 @@ module AddMethods
 			end		
 		}
 		
-		puts "Connecting to database..."
+#puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")		
+#dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")		
 				
-			dbh.do("INSERT INTO slices (slice_name) VALUES ('#{slice_name}')")
-			id = dbh.prepare("SELECT id FROM slices WHERE slice_name = '#{slice_name}'")
-			id.execute()
-			id.fetch do | n |
-				new_id = n[0]
-			end
+#			dbh.do("INSERT INTO slices (slice_name) VALUES ('#{slice_name}')")
+#			id = dbh.prepare("SELECT id FROM slices WHERE slice_name = '#{slice_name}'")
+#			id.execute()
+#			id.fetch do | n |
+#				new_id = n[0]
+#			end
 			# create OMF pubsub node into the xmpp server
-			value = `create_slice #{slice_name} your_xmpp_server`
+#			value = `create_slice_sfa #{slice_name} #{new_id}`
+			value = `create_slice #{slice_name} nitlab.inf.uth.gr`
+			puts value
 			
 		rescue DBI::DatabaseError => e
 			puts "An error occurred"
@@ -476,7 +478,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			dbh.do("INSERT INTO node_list (name,type,floor,view,wall,X,Y,Z) VALUES ('#{hostname}','#{node_type}','#{floor}','#{view}','#{wall}','#{position.values[0]}','#{position.values[1]}','#{position.values[2]}')")
 			id = dbh.prepare("SELECT id FROM node_list WHERE name = '#{hostname}'")
@@ -523,7 +525,7 @@ module AddMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 		
 			dbh.do("INSERT INTO spectrum (channel) VALUES ('#{channel}')")
 			id = dbh.prepare("SELECT id FROM spectrum WHERE channel = '#{channel}'")

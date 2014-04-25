@@ -53,7 +53,7 @@ module GetMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
   
 		if retValue.empty? && filter.empty? 
 			my_query = dbh.prepare("SELECT name, id, type, floor, view, wall, x, y, z FROM node_list order by name")
@@ -264,7 +264,7 @@ module GetMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 
 		if retValue.empty? && filter.empty? 
 			my_query = dbh.prepare("SELECT id, modulation, channel, frequency FROM spectrum")
@@ -371,7 +371,7 @@ module GetMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")
 			# get server version string and display it
 			row = dbh.select_one("SELECT VERSION()")
 			puts "Server version: " + row[0]
@@ -383,7 +383,7 @@ module GetMethods
 			i=0
 			my_query.fetch do | n |
 				# get users for this slice
-				my_query = dbh.prepare("SELECT b9tj1_users.id FROM b9tj1_users, users_slices WHERE b9tj1_users.id=users_slices.user_id AND users_slices.slice_id='#{n[0]}'")
+				my_query = dbh.prepare("SELECT b9tj1_users.id FROM nitlab.b9tj1_users, users_slices WHERE b9tj1_users.id=users_slices.user_id AND users_slices.slice_id='#{n[0]}'")
 				my_query.execute()
 
 				tmp = Array.new
@@ -427,7 +427,7 @@ module GetMethods
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")		
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")		
 			
 			# get the time now
 			time = Time.new
@@ -476,7 +476,7 @@ my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_ti
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")			
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")			
 			
 			# get the time now
 			time = Time.new
@@ -525,9 +525,9 @@ my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_ti
 		puts "Connecting to database..."
 		begin
 			# connect to the MySQL server
-			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$server}","#{$user}", "#{$pass}")			
+			dbh = DBI.connect("DBI:Mysql:#{$db}:#{$db_ip}","#{$user}", "#{$pass}")			
 			
-			my_query = dbh.prepare("SELECT id, username, email FROM b9tj1_users WHERE block='0'")
+			my_query = dbh.prepare("SELECT id, username, email FROM nitlab.b9tj1_users WHERE block='0'")
 			my_query.execute()				
 			i=0
 			my_query.fetch do | n |
@@ -564,7 +564,7 @@ my_query = dbh.prepare("SELECT id, username, unix_timestamp(begin_time), unix_ti
 ###################################################################
 	def getTestbedInfo()
 		final = Struct.new(:name,:grain,:OMF_version,:scheduler_version,:gw_address,:longitude,:latitude)
-		final_result = final.new("nitos","1800","5.4","1.0","nitlab.inf.uth.gr","39.360839","22.949989")			
+		final_result = final.new("nitos","1800","5.4","1.0","nitlab.inf.uth.gr","22.949989", "39.360839")			
 		puts "result: #{final_result}"
 		final_result
 	end
